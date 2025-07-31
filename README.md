@@ -1,10 +1,7 @@
 # OBS Auto Recording Mover
 
-Automatically moves video recordings from OBS Studio into uniquely named folders based on the current active window title. Supports path translation (e.g., from mounted network shares) and optional shorthand mappings to clean up folder names.
-
-## License
-
-This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+Automatically moves video recordings from OBS Studio into uniquely named folders based on the current active window title.  
+Supports path translation (e.g., from mounted network shares) and optional shorthand mappings to clean up folder names.
 
 ## Requirements
 
@@ -12,6 +9,12 @@ This script requires Python 3.8+ and the following Python packages:
 
 - [`obsws-python`](https://pypi.org/project/obsws-python/)
 - [`pywinctl`](https://pypi.org/project/pywinctl/)
+
+## Download
+
+You can get the latest release from:
+- **Main Repository:** [Codeberg Releases](https://codeberg.org/marvin1099/OBS-recording-mover/releases)
+- **Backup Mirror:** [GitHub Releases](https://github.com/marvin1099/OBS-recording-mover/releases)
 
 ## Installation (with virtual environment)
 
@@ -58,8 +61,12 @@ After the recording is finished the output file will be moved to "$video_dir/$de
 ### Example
 
 ```bash
-python OBS-recording-mover.py -p REALOBSPASS -T '{"X:/record":"/mnt/share"}' -S '{"Konsole":"Terminal"}'
+python OBS-recording-mover.py -p REALOBSPASS -T '{"/mnt/drive/records":"/mnt/smb-share/records"}' -S '{"Long-Random-Window-Title":"RandomVids"}'
 ```
+Its to note that the sanitized titles are expected as shorthand keys.  
+You can get the sanitized titles by making a short test recording,  
+while the script is running, with the window in focus that you want to get.  
+The cli output will have the sanitized titles.
 
 ## Configuration
 
