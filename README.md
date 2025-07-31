@@ -1,4 +1,4 @@
-# OBS Auto Move Recorder
+# OBS Auto Recording Mover
 
 Automatically moves video recordings from OBS Studio into uniquely named folders based on the current active window title. Supports path translation (e.g., from mounted network shares) and optional shorthand mappings to clean up folder names.
 
