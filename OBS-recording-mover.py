@@ -66,7 +66,7 @@ def setup_arg_parser(config_defaults):
     parser.add_argument("-d", "--dest_base", default=config_defaults.get("dest_base", ".."), help="Where to relocate the Videos from (default \"..\")")
     parser.add_argument("-t", "--track_interval", type=int, default=config_defaults.get("track_interval", 1), help="Window tracking intervall (default 1)")
     parser.add_argument("-c", "--track_command", default=config_defaults.get("track_command", ""), help="Set a window tracking command, so wayland users can still use window tracking")
-    parser.add_argument("-s", "--strip", default=config_defaults.get("strip", "-—"), help="Provide any amount of strip characters to remove towards (def: -—)")
+    parser.add_argument("-s", "--strip", default=config_defaults.get("strip", "-—"), help="Characters to strip from window titles with previus chars (def: -—)")
     parser.add_argument("-T", "--translate", type=str, default=config_defaults.get("translate", {}), help="Path translation JSON string")
     parser.add_argument("-S", "--shorthand", type=str, default=config_defaults.get("shorthand", {}), help="Shorthand mapping JSON string")
 
