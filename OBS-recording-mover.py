@@ -7,6 +7,7 @@ import json
 import shutil
 import argparse
 import threading
+import subprocess
 from collections import defaultdict
 import platform
 import obsws_python as obs
@@ -64,6 +65,8 @@ def setup_arg_parser(config_defaults):
     parser.add_argument("-p", "--password", default=config_defaults.get("password", ""), help="OBS WebSocket password")
     parser.add_argument("-d", "--dest_base", default=config_defaults.get("dest_base", ".."), help="Where to relocate the Videos from (default \"..\")")
     parser.add_argument("-t", "--track_interval", type=int, default=config_defaults.get("track_interval", 1), help="Window tracking intervall (default 1)")
+    parser.add_argument("-c", "--track_command", default=config_defaults.get("track_command", ""), help="Set a window tracking command, so wayland users can still use window tracking")
+    parser.add_argument("-s", "--strip", default=config_defaults.get("strip", "-—"), help="Provide any amount of strip characters to remove towards (def: -—)")
     parser.add_argument("-T", "--translate", type=str, default=config_defaults.get("translate", {}), help="Path translation JSON string")
     parser.add_argument("-S", "--shorthand", type=str, default=config_defaults.get("shorthand", {}), help="Shorthand mapping JSON string")
 
@@ -82,19 +85,38 @@ latest_output_paths = []
 last_output_paths = []
 
 def get_focused_window_title():
-    try:
-        win = pywinctl.getActiveWindow()
-        return win.title if win else "Desktop"
-    except Exception:
-        return "Desktop"
+    win = pywinctl.getActiveWindow()
+    return win.title if win else "Desktop"
 
 def window_tracker():
     print("[INFO] Window tracking started.")
     last_title = None
+    except_msg = None
+    last_except = None
+
     last_time = time.time()
 
     while not stop_focus_thread:
-        current_title = get_focused_window_title()
+        if TRACK_COMMAND:
+            result = subprocess.run(TRACK_COMMAND, shell=True, capture_output=True, text=True)
+            if result.returncode == 0:
+                current_title = result.stdout
+            else:
+                current_title = "Desktop"
+                except_msg = f"Window title command, results in errorcode {result.returncode} with message: {result.stdout} {result.stderr}"
+                if except_msg != last_except:
+                    print(except_msg)
+                last_except = except_msg
+        else:
+            try:
+                current_title = get_focused_window_title()
+            except Exception as e:
+                current_title = "Desktop"
+                except_msg = f"Unable to get window title: {e}"
+                if except_msg != last_except:
+                    print(except_msg)
+                last_except = except_msg
+
         now = time.time()
 
         if last_title:
@@ -111,10 +133,22 @@ def window_tracker():
     print("[INFO] Window tracking stopped.")
 
 def sanitize(title: str) -> str:
+    if STRIP:
+        # Strip up to and including the last char in STRIP
+        pattern = f"[{re.escape(STRIP)}]"
+        match = re.search(pattern, title[::-1])  # search backwards
+        if match:
+            # Cut everything up to last STRIP char
+            last_pos = len(title) - match.start()
+            cleaned = title[last_pos:]
+    else:
+        cleaned = str(title)
+
     # Replace unwanted characters with underscore
-    cleaned = re.sub(r"[^\w\s-]", "", title)       # keep alphanum, _, space, -
+    cleaned = re.sub(r"[^\w\s-]", "", cleaned)       # keep alphanum, _, space, -
     cleaned = re.sub(r"[\s_-]+", "-", cleaned)     # collapse multiple separators
     cleaned = re.sub(r"^[-_]+|[-_]+$", "", cleaned)  # clean - and _ from the ends
+
     if cleaned:
         print(f"[INFO] Sanitized Window Title: {cleaned}")
     if SHORT_HANDS.get(cleaned):
@@ -217,7 +251,7 @@ def on_record_state_changed(data):
 # === MAIN ===
 
 def main():
-    global OBS_HOST, OBS_PORT, OBS_PASSWORD, DESTINATION_BASE, TRACK_INTERVAL
+    global OBS_HOST, OBS_PORT, OBS_PASSWORD, DESTINATION_BASE, TRACK_INTERVAL, TRACK_COMMAND, STRIP
     global PATH_TRANSLATE, SHORT_HANDS
 
     config_defaults = load_config()
@@ -254,8 +288,10 @@ def main():
     OBS_HOST = args.host
     OBS_PORT = args.port
     OBS_PASSWORD = args.password
+    STRIP = args.strip
     DESTINATION_BASE = args.dest_base
     TRACK_INTERVAL = args.track_interval
+    TRACK_COMMAND = args.track_command
 
 
     print("[INFO] Connecting to OBS WebSocket...")
