@@ -1,7 +1,8 @@
 # OBS Auto Recording Mover
 
 Automatically moves video recordings from OBS Studio into uniquely named folders based on the current active window title.  
-Supports path translation (e.g., from mounted network shares), shorthand mappings to clean up folder names, and custom window tracking commands (useful on Wayland).
+Supports path translation (e.g., from mounted network shares), shorthand mappings to clean up folder names,  
+and custom window tracking commands (useful on Wayland).
 
 ## Requirements
 
