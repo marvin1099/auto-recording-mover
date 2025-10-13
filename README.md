@@ -62,10 +62,9 @@ $video_dir/$dest_base/$WindowName
 | `-d`, `--dest_base`      | Base destination directory (default: `..`; means parent folder)           |
 | `-t`, `--track_interval` | Window tracking interval in seconds (default: `1`)                        |
 | `-c`, `--track_command`  | Custom command for window tracking (useful on Wayland if pywinctl fails)  |
-| `-s`, `--strip`          | Characters to strip from window titles with previus chars (default: `-—`) |
 | `-T`, `--translate`      | JSON string for path translation (e.g. `{"X:/record": "/mnt/share"}`)     |
 | `-S`, `--shorthand`      | JSON string to map long window titles to short names                      |
-
+| `-C`, `--check_track`    | Only Check what window would be tracked and the sanitized title           |
 ### Example
 
 ```bash
