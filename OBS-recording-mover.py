@@ -274,8 +274,8 @@ def path_translate(path: str) -> str:
             # Use os.path.join to ensure correct separator
             relative_part = os.path.relpath(norm_path, src_prefix)
             p = os.path.join(dst_prefix, relative_part)
-            print(f"[INFO] Found Translatiton for: {path}")
-            print(f"[INFO] Translating to: {p}")
+            print(f"[INFO] Found Translatiton for: '{path}'")
+            print(f"[INFO] Translating to: '{p}'")
             return p
 
     return path
@@ -285,7 +285,7 @@ def move_recording(path, window_title):
     path = path_translate(path)
 
     if not path or not os.path.exists(path):
-        print(f"[ERROR] Recording file not found: {path}")
+        print(f"[ERROR] Recording file not found: '{path}'")
         return
 
     sanitized_title = sanitize(window_title)
@@ -299,7 +299,7 @@ def move_recording(path, window_title):
 
     try:
         shutil.move(path, dest_path)
-        print(f"[INFO] Recording moved to: {dest_path}")
+        print(f"[INFO] Recording moved to: '{dest_path}'")
     except Exception as e:
         print(f"[ERROR] Failed to move recording: {e}")
 
@@ -313,7 +313,7 @@ def add_files(path):
         and path not in last_output_paths
     ):
         latest_output_paths.append(path)
-        print(f"[INFO] OBS Recording file path added: {path}")
+        print(f"[INFO] OBS Recording file path added: '{path}'")
 
 
 # === OBS EVENT HANDLERS ===
